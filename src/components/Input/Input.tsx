@@ -10,7 +10,7 @@ interface InputProps
   type?: InputType;
   placeholder?: string;
   error?: { message?: string };
-  register?: (name: string) => Record<string, unknown>;
+  register?: any;
   required?: boolean;
   className?: string;
 }

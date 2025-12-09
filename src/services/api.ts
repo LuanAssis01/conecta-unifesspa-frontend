@@ -1,6 +1,6 @@
 import type { ErrorResponse } from '../types/errorResponseTypes';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const getToken = (): string | null => {
     return localStorage.getItem('token');

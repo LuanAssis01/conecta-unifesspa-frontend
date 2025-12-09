@@ -2,7 +2,7 @@ import type { ErrorResponse } from '../types/errorResponseTypes';
 import type { AuthResponse, VerifyTokenResponse, RegisterData } from '../types/userType';
 
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const authService = {
     async login(email: string, password: string): Promise<AuthResponse> {

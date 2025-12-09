@@ -1,7 +1,7 @@
 import type { User } from '../types/userType';
 import type { Project } from '../types/projectTypes';
 import type { Course } from '../types/courseTypes';
-import type { Statistics } from '../types/statisticsType';
+import type { Statistics } from '../types/statisticsTypes';
 import type { PendingApproval } from '../types/approvalStatusTypes';
 
 // Mock data for projects

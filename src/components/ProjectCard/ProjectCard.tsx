@@ -1,18 +1,6 @@
 import React from "react";
 import Button from "../Button/Button";
-
-type ProjectStatus = "ativo" | "em_andamento" | "planejamento" | "finalizado";
-
-interface Project {
-  id?: string | number;
-  title: string;
-  description: string;
-  status: ProjectStatus;
-  image?: string;
-  category?: string;
-  coordinator?: string;
-  participants?: number | string;
-}
+import type { Project, ProjectStatus } from "../../types/projectTypes";
 
 interface ProjectCardProps {
   project: Project;
@@ -27,25 +15,29 @@ const getStatusBadge = (status: ProjectStatus | string) => {
     string,
     { text: string; className: string }
   > = {
-    ativo: {
+    ACTIVE: {
       text: "Ativo",
       className: "bg-[var(--color-success)]",
     },
-    em_andamento: {
-      text: "Em Andamento",
+    SUBMITTED: {
+      text: "Em Análise",
       className: "bg-[var(--color-warning)]",
     },
-    planejamento: {
-      text: "Planejamento",
+    APPROVED: {
+      text: "Aprovado",
       className: "bg-[#3b82f6]",
     },
-    finalizado: {
+    REJECTED: {
+      text: "Rejeitado",
+      className: "bg-[var(--color-error)]",
+    },
+    FINISHED: {
       text: "Finalizado",
       className: "bg-[var(--color-secondary)]",
     },
   };
 
-  return statusMap[status] || statusMap.ativo;
+  return statusMap[status] || statusMap.ACTIVE;
 };
 
 const ProjectCard: React.FC<ProjectCardProps> = ({
