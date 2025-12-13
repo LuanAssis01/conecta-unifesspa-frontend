@@ -1,6 +1,5 @@
-import type { ErrorResponse } from '../types/errorResponseTypes';
-import type { AuthResponse, VerifyTokenResponse, RegisterData } from '../types/userType';
-
+import { ErrorResponse } from '../types/errorResponse';
+import { AuthResponse, VerifyTokenResponse, RegisterData } from '../types/userType';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -14,7 +13,7 @@ export const authService = {
                 },
                 body: JSON.stringify({ email, password }),
             });
-
+            
             const json = await response.json(); // lê o body só uma vez
 
             if (!response.ok) {
@@ -22,8 +21,11 @@ export const authService = {
                 throw new Error(errorData.error || errorData.message || 'Erro ao fazer login');
             }
 
+            // json tem a forma:
+            // { success: true, message: string, data: { token, user } }
             const userData = json.data.user;
             
+            // Normaliza o role para minúsculo para compatibilidade
             if (userData.role) {
                 userData.role = userData.role.toLowerCase();
             }
@@ -38,6 +40,10 @@ export const authService = {
         }
     },
 
+
+    /**
+     * Logout user
+     */
     async logout(token: string): Promise<void> {
         try {
             const response = await fetch(`${API_BASE_URL}/auth/logout`, {
@@ -56,6 +62,9 @@ export const authService = {
         }
     },
 
+    /**
+     * Verify if token is still valid
+     */
     async verifyToken(token: string): Promise<VerifyTokenResponse> {
         try {
             const response = await fetch(`${API_BASE_URL}/auth/verify`, {
@@ -78,6 +87,9 @@ export const authService = {
         }
     },
 
+    /**
+     * Register a new user
+     */
     async register(userData: RegisterData): Promise<AuthResponse> {
         try {
             const response = await fetch(`${API_BASE_URL}/auth/register`, {

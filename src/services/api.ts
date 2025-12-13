@@ -1,17 +1,20 @@
-import type { ErrorResponse } from '../types/errorResponseTypes';
+import type { ErrorResponse } from '../types/errorResponse';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 export const getToken = (): string | null => {
     return localStorage.getItem('token');
 };
 
-export const createAuthHeaders = (additionalHeaders: Record<string, string> = {}): Record<string, string> => {
+export const createAuthHeaders = (additionalHeaders: Record<string, string> = {}, includeContentType: boolean = true): Record<string, string> => {
     const token = getToken();
     const headers: Record<string, string> = {
-        'Content-Type': 'application/json',
         ...additionalHeaders,
     };
+
+    if (includeContentType) {
+        headers['Content-Type'] = 'application/json';
+    }
 
     if (token) {
         headers['Authorization'] = `Bearer ${token}`;
@@ -26,8 +29,11 @@ export const authenticatedFetch = async (
 ): Promise<Response> => {
     const url = endpoint.startsWith('http') ? endpoint : `${API_BASE_URL}${endpoint}`;
     
+    // Se o body for FormData, não incluir Content-Type
+    const isFormData = options.body instanceof FormData;
+    
     const defaultOptions: RequestInit = {
-        headers: createAuthHeaders(options.headers as Record<string, string> || {}),
+        headers: createAuthHeaders(options.headers as Record<string, string> || {}, !isFormData),
     };
 
     const fetchOptions: RequestInit = {
