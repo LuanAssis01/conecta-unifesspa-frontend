@@ -1,153 +1,132 @@
-import React from "react";
 import Button from "../Button/Button";
-import type { Project, ProjectStatus } from "../../types/projectTypes";
+import { Project } from "../../types";
+import { Calendar, User } from "lucide-react";
 
 interface ProjectCardProps {
   project: Project;
   showActions?: boolean;
+  showDate?: boolean;
+  showCourse?: boolean;
+  showImage?: boolean;
   onEdit?: (project: Project) => void;
   onDelete?: (project: Project) => void;
   onView?: (project: Project) => void;
 }
 
-const getStatusBadge = (status: ProjectStatus | string) => {
-  const statusMap: Record<
-    string,
-    { text: string; className: string }
-  > = {
-    ACTIVE: {
-      text: "Ativo",
-      className: "bg-[var(--color-success)]",
-    },
-    SUBMITTED: {
-      text: "Em Análise",
-      className: "bg-[var(--color-warning)]",
-    },
-    APPROVED: {
-      text: "Aprovado",
-      className: "bg-[#3b82f6]",
-    },
-    REJECTED: {
-      text: "Rejeitado",
-      className: "bg-[var(--color-error)]",
-    },
-    FINISHED: {
-      text: "Finalizado",
-      className: "bg-[var(--color-secondary)]",
-    },
-  };
-
-  return statusMap[status] || statusMap.ACTIVE;
-};
-
-const ProjectCard: React.FC<ProjectCardProps> = ({
+const ProjectCard = ({
   project,
   showActions = false,
+  showDate = true,
+  showCourse = true,
+  showImage = true,
   onEdit,
   onDelete,
   onView,
-}) => {
+}: ProjectCardProps) => {
+  const getStatusBadge = (status: string) => {
+    const statusMap: Record<
+      string,
+      { text: string; className: string; dotColor: string }
+    > = {
+      ACTIVE: {
+        text: "Ativo",
+        className: "bg-green-50 text-green-700 border-green-200",
+        dotColor: "bg-green-500",
+      },
+      SUBMITTED: {
+        text: "Aguardando Aprovação",
+        className: "bg-yellow-50 text-yellow-700 border-yellow-200",
+        dotColor: "bg-yellow-500",
+      },
+      FINISHED: {
+        text: "Finalizado",
+        className: "bg-gray-50 text-gray-700 border-gray-200",
+        dotColor: "bg-gray-500",
+      },
+      APPROVED: {
+        text: "Aprovado",
+        className: "bg-blue-50 text-blue-700 border-blue-200",
+        dotColor: "bg-blue-500",
+      },
+      REJECTED: {
+        text: "Rejeitado",
+        className: "bg-red-50 text-red-700 border-red-200",
+        dotColor: "bg-red-500",
+      },
+    };
+
+    return statusMap[status] || statusMap.ACTIVE;
+  };
+
   const statusBadge = getStatusBadge(project.status);
 
   return (
     <div
+      onClick={() => onView && onView(project)}
       className="
-        bg-white rounded-xl overflow-hidden 
-        shadow-md transition-all duration-300 
-        h-full flex flex-col 
-        hover:-translate-y-1 hover:shadow-2xl
-      "
-    >
-      {project.image && (
-        <div className="relative w-full h-52 overflow-hidden">
+      bg-white rounded-2xl overflow-hidden shadow-sm border border-[var(--color-border)]
+      transition-all duration-300 h-full flex flex-col cursor-pointer
+      hover:-translate-y-1 hover:shadow-xl group
+    ">
+      {showImage && project.image && (
+        <div className="relative w-full h-[220px] overflow-hidden">
+          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 z-10" />
           <img
             src={project.image}
             alt={project.title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
           />
-          <span
-            className={`
-              absolute top-4 right-4 
-              px-4 py-2 rounded-full text-sm font-semibold text-white 
-              ${statusBadge.className}
-            `}
-          >
-            {statusBadge.text}
-          </span>
+
+          {showCourse && (
+            <div className="absolute top-4 left-4 z-20">
+              <span className={`
+                flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide
+                bg-white/90 backdrop-blur-sm shadow-sm border border-gray-100 text-[var(--color-text-secondary)]
+              `}>
+                {project.course || project.category}
+              </span>
+            </div>
+          )}
         </div>
       )}
 
-      <div className="p-6 flex flex-1 flex-col">
-        <div className="flex justify-between items-start mb-3 gap-4">
-          <h3 className="text-xl font-bold text-(--color-text) leading-snug flex-1">
-            {project.title}
-          </h3>
-          {project.category && (
-            <span
-              className="
-                bg-(--color-surface) text-(--color-text-secondary)
-                px-3 py-1 rounded-lg text-xs font-semibold whitespace-nowrap
-              "
-            >
-              {project.category}
-            </span>
-          )}
+      <div className="p-6 flex flex-col flex-1">
+        <div className="flex justify-between items-start gap-4 mb-3">
+          <div className={`
+              inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold border
+              ${statusBadge.className}
+            `}>
+            <span className={`w-2 h-2 rounded-full ${statusBadge.dotColor}`}></span>
+            {statusBadge.text}
+          </div>
         </div>
 
-        <p className="text-(--color-text-secondary) leading-relaxed mb-4 flex-1">
-          {project.description}
+        <h3 className="text-xl font-bold text-[var(--color-text)] leading-tight mb-3 group-hover:text-[var(--color-primary)] transition-colors">
+          {project.title}
+        </h3>
+
+        <p className="text-[var(--color-text-secondary)] text-sm leading-relaxed mb-6 flex-1 line-clamp-3">
+          {project.subtitle || project.description}
         </p>
 
-        <div
-          className="
-            flex flex-col gap-2 mb-4 pt-4 
-            border-t border-(--color-border)
-          "
-        >
+        <div className="flex items-center gap-4 pt-4 border-t border-[var(--color-border)] mt-auto">
           {project.coordinator && (
-            <div className="text-sm text-(--color-text-secondary)">
-              <strong className="text-(--color-text) font-semibold">
-                Coordenador:
-              </strong>{" "}
-              {project.coordinator}
-            </div>
-          )}
-          {project.participants !== undefined && (
-            <div className="text-sm text-(--color-text-secondary)">
-              <strong className="text-(--color-text) font-semibold">
-                Participantes:
-              </strong>{" "}
-              {project.participants}
+            <div className="flex items-center gap-2 text-xs text-[var(--color-text-secondary)] font-medium">
+              <User size={14} className="text-[var(--color-primary)]" />
+              <span>{project.coordinator}</span>
             </div>
           )}
         </div>
 
-        {showActions && (
-          <div className="flex flex-wrap gap-2 mt-auto md:flex-row flex-col">
-            {onView && (
-              <Button
-                variant="outline"
-                size="small"
-                onClick={() => onView(project)}
-              >
-                Ver Detalhes
-              </Button>
-            )}
+        {showActions && (onEdit || onDelete) && (
+          <div className="flex gap-2 mt-4 pt-4 border-t border-[var(--color-border)]">
             {onEdit && (
-              <Button
-                variant="secondary"
-                size="small"
-                onClick={() => onEdit(project)}
-              >
+              <Button variant="secondary" size="small" onClick={(e) => { e.stopPropagation(); onEdit(project); }} className="flex-1">
                 Editar
               </Button>
             )}
             {onDelete && (
-              <Button
-                variant="danger"
-                size="small"
-                onClick={() => onDelete(project)}
-              >
+              <Button variant="danger" size="small" onClick={(e) => { e.stopPropagation(); onDelete(project); }} className="flex-1">
                 Excluir
               </Button>
             )}
