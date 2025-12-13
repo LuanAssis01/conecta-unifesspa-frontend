@@ -1,6 +1,6 @@
-import { AuthProvider } from './context/authContext';
-import { UserProvider } from './context/userContext';
-import AppRoutes from './routes/index';
+import { AuthProvider } from './context/AuthContext';
+import { UserProvider } from './context/UserContext';
+import AppRoutes from './routes';
 
 function App() {
   return (
