@@ -1,14 +1,14 @@
 export type UserRole = 'TEACHER' | 'ADMIN';
 
 export type User = {
-    id: number;
+    id: string;
     name: string;
     email: string;
     role: UserRole;
     department?: string;
     course?: string;
     photo?: string;
-    projects?: number[];
+    projects?: string[];
 }
 
 export type AuthResponse = {
