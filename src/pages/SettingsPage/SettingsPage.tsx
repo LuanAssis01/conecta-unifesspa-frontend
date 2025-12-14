@@ -5,6 +5,7 @@ import Sidebar from '../../components/Sidebar/Sidebar';
 import Card from '../../components/Card/Card';
 import Button from '../../components/Button/Button';
 import Input from '../../components/Input/Input';
+import DefaultProfilePhoto from '../../assets/images/profile_photo.png';
 
 type SettingsTab = 'profile' | 'security' | 'notifications' | 'appearance';
 
@@ -18,7 +19,7 @@ const SettingsPage = () => {
         email: user?.email || '',
         phone: '(94) 99999-9999',
         siape: '2024001234',
-        photo: user?.photo || '/src/assets/images/profile_photo.png',
+        photo: user?.photo || DefaultProfilePhoto,
     });
 
     const [passwordData, setPasswordData] = useState({
