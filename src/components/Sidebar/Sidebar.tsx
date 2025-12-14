@@ -9,6 +9,8 @@ import {
   LogOut
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import Logo from '../../assets/logos/logo.png';
+import DefaultProfilePhoto from '../../assets/images/profile_photo.png';
 
 const Sidebar = () => {
   const location = useLocation();
@@ -54,7 +56,7 @@ const Sidebar = () => {
           "
         >
           <img
-            src="/src/assets/logos/logo.png"
+            src={Logo}
             className="w-10 h-auto"
             alt="Logo UNIFESSPA"
           />
@@ -122,7 +124,7 @@ const Sidebar = () => {
           "
         >
           <img
-            src={user?.photo || '/src/assets/images/profile_photo.png'}
+            src={user?.photo || DefaultProfilePhoto}
             alt={user?.name}
             className="w-10 h-10 rounded-full object-cover border-2 border-primary-500"
           />

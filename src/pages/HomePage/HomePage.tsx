@@ -5,6 +5,7 @@ import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import ProjectCard from '../../components/ProjectCard/ProjectCard';
 import Button from '../../components/Button/Button';
+import FotoUnifesspa from '../../assets/images/foto_unifesspa.png';
 
 const HomePage = () => {
     const navigate = useNavigate();
@@ -61,7 +62,7 @@ const HomePage = () => {
                         <div className="relative">
                             <div className="relative rounded-2xl overflow-hidden shadow-2xl transform hover:scale-105 transition-transform duration-300">
                                 <img
-                                    src="/src/assets/images/foto_unifesspa.png"
+                                    src={FotoUnifesspa}
                                     alt="UNIFESSPA Campus"
                                     className="w-full h-full object-cover"
                                 />

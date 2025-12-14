@@ -1,6 +1,7 @@
 import { GraduationCap, Users, Building2, Target, Heart, Globe } from 'lucide-react';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
+import PeopleImage from '../../assets/images/people.png';
 
 const AboutPage = () => {
     return (
@@ -65,7 +66,7 @@ const AboutPage = () => {
                             <div className="absolute -inset-4 bg-gradient-to-tr from-primary-100 to-primary-50 rounded-2xl transform rotate-3"></div>
                             <div className="relative rounded-xl overflow-hidden shadow-xl">
                                 <img
-                                    src="/src/assets/images/people.png"
+                                    src={PeopleImage}
                                     alt="Colaboração"
                                     className="w-full h-auto object-cover"
                                 />

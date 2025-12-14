@@ -6,6 +6,7 @@ import { useAuth } from '../../hooks/useAuth';
 import Button from '../../components/Button/Button';
 import { authService } from '../../services/authService';
 import { User } from '../../types';
+import Logo from '../../assets/logos/logo.png';
 
 interface LoginForm {
   email: string;
@@ -63,7 +64,7 @@ const LoginPage = () => {
             <div className="space-y-6">
               <div className="inline-flex items-center gap-4 bg-white/10 backdrop-blur-md px-6 py-4 rounded-2xl border border-white/20">
                 <img
-                  src="/src/assets/logos/logo.png"
+                  src={Logo}
                   alt="Conecta Unifesspa"
                   className="h-12 w-auto"
                 />

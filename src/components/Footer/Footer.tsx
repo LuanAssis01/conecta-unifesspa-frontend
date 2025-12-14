@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import Logo from '../../assets/logos/logo.png';
 
 const Footer = () => {
     return (
@@ -16,7 +17,7 @@ const Footer = () => {
                 <div className="flex flex-col gap-4">
                     <div className="flex items-center gap-4 mb-2">
                         <img
-                            src="/src/assets/logos/logo.png"
+                            src={Logo}
                             alt="Conecta Unifesspa"
                             className="w-10 h-auto"
                         />

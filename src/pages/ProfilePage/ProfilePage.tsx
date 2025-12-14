@@ -8,6 +8,7 @@ import ProjectCard from '../../components/ProjectCard/ProjectCard';
 import { Plus, Edit, Mail, Loader2 } from 'lucide-react';
 import { projectService } from '../../services/projectService';
 import { Project } from '../../types';
+import DefaultProfilePhoto from '../../assets/images/profile_photo.png';
 
 const ProfilePage = () => {
   const { user } = useAuth();
@@ -68,7 +69,7 @@ const ProfilePage = () => {
               <div className="mb-4 relative group">
                 <div className="absolute inset-0 bg-[var(--color-primary)]/10 rounded-full blur-xl group-hover:blur-2xl transition-all duration-500"></div>
                 <img
-                  src={user?.photo || '/src/assets/images/profile_photo.png'}
+                  src={user?.photo || DefaultProfilePhoto}
                   alt={user?.name}
                   className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-xl relative z-10"
                 />

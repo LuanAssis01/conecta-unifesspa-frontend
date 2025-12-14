@@ -1,6 +1,7 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import Button from '../Button/Button';
+import Logo from '../../assets/logos/logo.png';
 
 const Header = () => {
     const { isAuthenticated, user, logout } = useAuth();
@@ -33,7 +34,7 @@ const Header = () => {
                     "
                 >
                     <img
-                        src="/src/assets/logos/logo.png"
+                        src={Logo}  
                         alt="Conecta Unifesspa"
                         className="h-10 w-auto"
                     />
