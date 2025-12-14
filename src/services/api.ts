@@ -1,6 +1,24 @@
 import type { ErrorResponse } from '../types/errorResponse';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+// Configuração da URL base da API
+const getApiBaseUrl = (): string => {
+    const envUrl = import.meta.env.VITE_API_BASE_URL;
+    
+    // Se não houver URL configurada, usa fallback
+    if (!envUrl) {
+        console.warn('VITE_API_BASE_URL não configurada, usando /api como fallback');
+        return '/api';
+    }
+    
+    return envUrl;
+};
+
+const API_BASE_URL = getApiBaseUrl();
+
+// Log para debug em desenvolvimento
+if (import.meta.env.DEV) {
+    console.log('API_BASE_URL:', API_BASE_URL);
+}
 
 export const getToken = (): string | null => {
     return localStorage.getItem('token');
