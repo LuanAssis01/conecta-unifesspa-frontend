@@ -121,11 +121,13 @@ const EditProjectPage = () => {
     const handleAddIndicator = async () => {
         if (newIndicator.title.trim() && newIndicator.value.trim() && project) {
             try {
-                const createdIndicator = await impactIndicatorService.create({
-                    project_id: project.id,
-                    title: newIndicator.title,
-                    value: newIndicator.value
-                });
+                const createdIndicator = await impactIndicatorService.create(
+                    project.id,
+                    {
+                        title: newIndicator.title,
+                        value: parseInt(newIndicator.value, 10)
+                    }
+                );
                 setImpactIndicators([...impactIndicators, createdIndicator]);
                 setNewIndicator({ title: '', value: '' });
             } catch (err) {
@@ -135,8 +137,9 @@ const EditProjectPage = () => {
     };
 
     const handleRemoveIndicator = async (indicator: ImpactIndicator) => {
+        if (!project) return;
         try {
-            await impactIndicatorService.delete(indicator.id);
+            await impactIndicatorService.delete(project.id, indicator.id);
             setImpactIndicators(impactIndicators.filter(i => i.id !== indicator.id));
         } catch (err) {
             console.error('Erro ao remover indicador:', err);
@@ -169,9 +172,7 @@ const EditProjectPage = () => {
 
             // Upload image if selected
             if (selectedImage) {
-                const formData = new FormData();
-                formData.append('image', selectedImage);
-                await projectService.updateImage(project.id, formData);
+                await projectService.updateImage(project.id, selectedImage);
             }
 
             alert('Projeto atualizado com sucesso!');

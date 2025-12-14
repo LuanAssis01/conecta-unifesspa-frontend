@@ -1,16 +1,29 @@
 import { get, post, del } from './api';
 import type { Keyword, Project } from '../types';
 
-export interface CreateKeywordInput {
-    name: string;
-}
-
 export const keywordService = {
     /**
-     * Adicionar keyword a um projeto (requer autenticação)
+     * Adicionar keywords a um projeto (requer autenticação)
+     * O backend espera: { keywords: string[] }
      */
-    async addToProject(projectId: string, data: CreateKeywordInput): Promise<{ message: string; keyword: Keyword }> {
-        return post(`/keywords/projects/${projectId}`, data);
+    async addToProject(projectId: string, keywordName: string): Promise<Keyword> {
+        const response = await post<{ message: string; keywords: Keyword[] }>(
+            `/keywords/projects/${projectId}`, 
+            { keywords: [keywordName] }
+        );
+        // Retorna a primeira keyword criada (ou a que corresponde ao nome)
+        return response.keywords.find(k => k.name === keywordName) || response.keywords[0];
+    },
+
+    /**
+     * Adicionar múltiplas keywords a um projeto (requer autenticação)
+     */
+    async addMultipleToProject(projectId: string, keywordNames: string[]): Promise<Keyword[]> {
+        const response = await post<{ message: string; keywords: Keyword[] }>(
+            `/keywords/projects/${projectId}`, 
+            { keywords: keywordNames }
+        );
+        return response.keywords;
     },
 
     /**
@@ -22,8 +35,9 @@ export const keywordService = {
 
     /**
      * Remover keyword de um projeto (requer autenticação)
+     * Endpoint: DELETE /keywords/:keywordId/projects/:projectId
      */
-    async removeFromProject(keywordId: string, projectId: string): Promise<{ message: string }> {
+    async removeFromProject(projectId: string, keywordId: string): Promise<{ message: string }> {
         return del(`/keywords/${keywordId}/projects/${projectId}`);
     },
 

@@ -25,7 +25,7 @@ const Sidebar = () => {
 
   const filteredMenuItems = menuItems.filter((item) => {
     if (!item.roles) return true;
-    return item.roles.includes(user?.role || 'teacher');
+    return item.roles.includes(user?.role?.toLowerCase() || 'teacher');
   });
 
   return (
@@ -132,9 +132,9 @@ const Sidebar = () => {
               {user?.name || 'Usuário'}
             </p>
             <p className="text-xs text-gray-400 truncate">
-              {user?.role === 'teacher'
+              {user?.role?.toLowerCase() === 'teacher'
                 ? 'Professor'
-                : user?.role === 'admin'
+                : user?.role?.toLowerCase() === 'admin'
                   ? 'Administrador'
                   : 'Professor'}
             </p>

@@ -1,9 +1,8 @@
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
-import { User } from '../types';
 
 interface ProtectedRouteProps {
-    allowedRoles?: User['role'][];
+    allowedRoles?: string[];
 }
 
 const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
@@ -17,7 +16,7 @@ const ProtectedRoute = ({ allowedRoles }: ProtectedRouteProps) => {
         return <Navigate to="/login" replace />;
     }
 
-    if (allowedRoles && !allowedRoles.includes(user.role)) {
+    if (allowedRoles && !allowedRoles.some(role => role.toLowerCase() === user.role?.toLowerCase())) {
         // Redirect to home for unauthorized access
         return <Navigate to="/" replace />;
     }

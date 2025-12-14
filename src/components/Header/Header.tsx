@@ -91,7 +91,7 @@ const Header = () => {
                                 variant="outline"
                                 size="small"
                                 onClick={() => {
-                                    if (user?.role === 'admin') {
+                                    if (user?.role?.toLowerCase() === 'admin') {
                                         navigate('/dashboard');
                                     } else {
                                         navigate('/dashboard/perfil');

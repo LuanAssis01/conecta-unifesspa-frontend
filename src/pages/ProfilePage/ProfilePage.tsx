@@ -23,7 +23,7 @@ const ProfilePage = () => {
       try {
         // Buscar todos os projetos e filtrar pelo criador
         const allProjects = await projectService.getAll();
-        const myProjects = allProjects.filter(p => p.creator_id === user.id);
+        const myProjects = allProjects.filter(p => p.creatorId === user.id);
         setUserProjects(myProjects);
       } catch (err: any) {
         console.error('Erro ao carregar projetos:', err);
@@ -49,7 +49,7 @@ const ProfilePage = () => {
               Gerencie suas informações e visualize suas atividades
             </p>
           </div>
-          {(user?.role === 'teacher' || user?.role === 'admin') && (
+          {(user?.role?.toLowerCase() === 'teacher' || user?.role?.toLowerCase() === 'admin') && (
             <Button
               variant="primary"
               onClick={() => navigate('/dashboard/projetos/novo')}
@@ -76,9 +76,9 @@ const ProfilePage = () => {
               <div>
                 <h2 className="text-2xl font-bold text-[var(--color-text)] mb-1">{user?.name}</h2>
                 <p className="text-[var(--color-primary)] font-bold text-xs uppercase tracking-wider mb-3 bg-[var(--color-primary)]/10 px-3 py-1 rounded-full inline-block">
-                  {user?.role === 'teacher'
+                  {user?.role?.toLowerCase() === 'teacher'
                     ? 'Professor'
-                    : user?.role === 'admin'
+                    : user?.role?.toLowerCase() === 'admin'
                       ? 'Administrador'
                       : 'Professor'}
                 </p>

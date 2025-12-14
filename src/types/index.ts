@@ -1,7 +1,7 @@
-// Enums
+// Enums - Correspondem ao backend
 export type ProjectStatus = 'SUBMITTED' | 'APPROVED' | 'REJECTED' | 'ACTIVE' | 'FINISHED';
 export type AudienceType = 'INTERNAL' | 'EXTERNAL';
-export type UserRole = 'admin' | 'teacher';
+export type UserRole = 'admin' | 'teacher' | 'ADMIN' | 'TEACHER';
 
 // Keyword
 export interface Keyword {
@@ -62,7 +62,7 @@ export interface Project {
     impactIndicators?: ImpactIndicator[];
 }
 
-// Input types para criação/atualização
+// Input types para criação/atualização - Alinhados com o backend
 export interface CreateProjectInput {
     name: string;
     description: string;

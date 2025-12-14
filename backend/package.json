@@ -1,0 +1,41 @@
+{
+  "name": "query_builder",
+  "version": "1.0.0",
+  "description": "Back-End unifesspa+",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsx watch --env-file .env api/server.ts",
+    "prisma": "prisma",
+    "seed": "tsx prisma/seed.ts",
+    "start": "tsx api/server.ts"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "author": "Ketly, Luan, Marília e Paulo",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^22.2.0",
+    "typescript": "^5.5.4"
+  },
+  "dependencies": {
+    "@fastify/cors": "^11.1.0",
+    "@fastify/multipart": "^9.2.1",
+    "@prisma/client": "^6.16.2",
+    "@vercel/node": "^5.5.15",
+    "axios": "^1.13.1",
+    "bcrypt": "^6.0.0",
+    "cloudinary": "^1.37.2",
+    "cors": "^2.8.5",
+    "fastify": "^5.6.0",
+    "fastify-multer": "^2.0.3",
+    "jsonwebtoken": "^9.0.2",
+    "multer-storage-cloudinary": "^4.0.0",
+    "postgres": "^3.4.7",
+    "prisma": "^6.16.2",
+    "tsx": "^4.17.0",
+    "zod": "^4.1.13"
+  }
+}
