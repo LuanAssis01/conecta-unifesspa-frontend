@@ -34,6 +34,8 @@ const SubmitProjectPage = () => {
     const [loading, setLoading] = useState(false);
     const [loadingCourses, setLoadingCourses] = useState(true);
     const [submitError, setSubmitError] = useState<string | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
     useEffect(() => {
         const fetchCourses = async () => {
@@ -48,7 +50,17 @@ const SubmitProjectPage = () => {
         };
         fetchCourses();
     }, []);
-
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setSelectedImage(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
+    };
     const onSubmit = async (data: SubmitProjectForm) => {
         setLoading(true);
         setSubmitError(null);
@@ -71,22 +83,14 @@ const SubmitProjectPage = () => {
 
             let hasUploadError = false;
 
-            // Se houver imagem, fazer upload e armazenar localmente
-            if (data.image_file && data.image_file.length > 0) {
+            // Se houver imagem, fazer upload para Cloudinary
+            if (selectedImage) {
                 try {
-                    // Armazenar localmente como backup
-                    const imageFile = data.image_file[0];
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                        const base64Image = reader.result as string;
-                        localStorage.setItem(`project_image_${createdProject.id}`, base64Image);
-                    };
-                    reader.readAsDataURL(imageFile);
-
-                    // Tentar fazer upload para o backend
-                    await projectService.updateImage(createdProject.id, imageFile);
+                    console.log('Enviando imagem:', selectedImage.name, selectedImage.type);
+                    await projectService.updateImage(createdProject.id, selectedImage);
+                    console.log('Imagem enviada com sucesso!');
                 } catch (fileErr: any) {
-                    console.warn('Erro ao fazer upload da imagem:', fileErr);
+                    console.error('Erro ao fazer upload da imagem:', fileErr);
                     hasUploadError = true;
                 }
             }
@@ -332,19 +336,30 @@ const SubmitProjectPage = () => {
                                         <label className="block text-sm font-semibold text-gray-700 mb-2">
                                             Imagem de Capa do Projeto
                                         </label>
+                                        {imagePreview && (
+                                            <div className="mb-4">
+                                                <img 
+                                                    src={imagePreview} 
+                                                    alt="Preview" 
+                                                    className="w-full h-48 object-cover rounded-xl border border-gray-300" 
+                                                />
+                                            </div>
+                                        )}
                                         <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary-500 hover:bg-primary-50 transition cursor-pointer group">
                                             <input
                                                 type="file"
                                                 id="image-upload"
-                                                accept="image/jpeg,image/jpg,image/png,image/gif"
-                                                {...register('image_file')}
+                                                accept="image/*"
+                                                onChange={handleImageChange}
                                                 className="hidden"
                                             />
                                             <label htmlFor="image-upload" className="cursor-pointer flex flex-col items-center">
                                                 <div className="w-14 h-14 bg-green-50 text-green-600 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition">
                                                     <Upload size={28} />
                                                 </div>
-                                                <span className="text-base font-semibold text-gray-700 mb-1">Clique para fazer upload da imagem</span>
+                                                <span className="text-base font-semibold text-gray-700 mb-1">
+                                                    {imagePreview ? 'Clique para alterar a imagem' : 'Clique para fazer upload da imagem'}
+                                                </span>
                                                 <span className="text-xs text-gray-400 mt-1">JPG, JPEG, PNG ou GIF (Máx. 5MB) - Opcional</span>
                                             </label>
                                         </div>

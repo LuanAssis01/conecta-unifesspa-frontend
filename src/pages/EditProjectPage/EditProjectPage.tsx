@@ -65,11 +65,8 @@ const EditProjectPage = () => {
                 // Set impact indicators
                 setImpactIndicators(data.impactIndicators || []);
 
-                // Set image preview - priorizar localStorage
-                const storedImage = localStorage.getItem(`project_image_${data.id}`);
-                if (storedImage) {
-                    setImagePreview(storedImage);
-                } else if (data.img_url) {
+                // Set image preview
+                if (data.img_url) {
                     setImagePreview(data.img_url);
                 }
 
@@ -153,18 +150,7 @@ const EditProjectPage = () => {
         const file = e.target.files?.[0];
         if (file) {
             setSelectedImage(file);
-            const previewUrl = URL.createObjectURL(file);
-            setImagePreview(previewUrl);
-            
-            // Converter para base64 e armazenar no localStorage
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                const base64Image = reader.result as string;
-                if (project?.id) {
-                    localStorage.setItem(`project_image_${project.id}`, base64Image);
-                }
-            };
-            reader.readAsDataURL(file);
+            setImagePreview(URL.createObjectURL(file));
         }
     };
 
@@ -186,12 +172,7 @@ const EditProjectPage = () => {
 
             // Upload image if selected
             if (selectedImage) {
-                try {
-                    await projectService.updateImage(project.id, selectedImage);
-                } catch (imgErr: any) {
-                    console.warn('Erro ao fazer upload da imagem, mas ela foi salva localmente:', imgErr);
-                    // Imagem já está no localStorage, então só avisa o usuário
-                }
+                await projectService.updateImage(project.id, selectedImage);
             }
 
             alert('Projeto atualizado com sucesso!');

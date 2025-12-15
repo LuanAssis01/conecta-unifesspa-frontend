@@ -13,7 +13,6 @@ const ProjectDetailsPage = () => {
     const [project, setProject] = useState<Project | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [localImage, setLocalImage] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchProject = async () => {
@@ -23,12 +22,6 @@ const ProjectDetailsPage = () => {
                 setError(null);
                 const data = await projectService.getById(id);
                 setProject(data);
-
-                // Verificar se há imagem armazenada localmente
-                const storedImage = localStorage.getItem(`project_image_${id}`);
-                if (storedImage) {
-                    setLocalImage(storedImage);
-                }
             } catch (err) {
                 console.error('Erro ao carregar projeto:', err);
                 setError(err instanceof Error ? err.message : 'Erro ao carregar projeto');
@@ -144,9 +137,9 @@ const ProjectDetailsPage = () => {
                         {/* Left Column - Image */}
                         <div>
                             <div className="sticky top-8">
-                                {(localImage || project.img_url) ? (
+                                {project.img_url ? (
                                     <img
-                                        src={localImage || project.img_url}
+                                        src={project.img_url}
                                         alt={project.name}
                                         className="w-full rounded-xl shadow-lg"
                                     />
