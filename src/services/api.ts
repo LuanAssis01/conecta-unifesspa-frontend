@@ -50,8 +50,11 @@ export const authenticatedFetch = async (
     // Se o body for FormData, não incluir Content-Type
     const isFormData = options.body instanceof FormData;
     
+    // DELETE sem body não deve incluir Content-Type
+    const shouldIncludeContentType = !isFormData && !(options.method === 'DELETE' && !options.body);
+    
     const defaultOptions: RequestInit = {
-        headers: createAuthHeaders(options.headers as Record<string, string> || {}, !isFormData),
+        headers: createAuthHeaders(options.headers as Record<string, string> || {}, shouldIncludeContentType),
     };
 
     const fetchOptions: RequestInit = {
@@ -81,7 +84,7 @@ export const get = async <T = any>(endpoint: string): Promise<T> => {
 
     if (!response.ok) {
         const error: ErrorResponse = await response.json();
-        throw new Error(error.message || 'Erro na requisição');
+        throw new Error(error.error || error.message || 'Erro na requisição');
     }
 
     return response.json();
@@ -95,7 +98,7 @@ export const post = async <T = any>(endpoint: string, data: any): Promise<T> => 
 
     if (!response.ok) {
         const error: ErrorResponse = await response.json();
-        throw new Error(error.message || 'Erro na requisição');
+        throw new Error(error.error || error.message || 'Erro na requisição');
     }
 
     return response.json();
@@ -109,7 +112,7 @@ export const put = async <T = any>(endpoint: string, data: any): Promise<T> => {
 
     if (!response.ok) {
         const error: ErrorResponse = await response.json();
-        throw new Error(error.message || 'Erro na requisição');
+        throw new Error(error.error || error.message || 'Erro na requisição');
     }
 
     return response.json();
@@ -122,7 +125,7 @@ export const del = async <T = any>(endpoint: string): Promise<T> => {
 
     if (!response.ok) {
         const error: ErrorResponse = await response.json();
-        throw new Error(error.message || 'Erro na requisição');
+        throw new Error(error.error || error.message || 'Erro na requisição');
     }
 
     return response.json();
@@ -136,7 +139,7 @@ export const patch = async <T = any>(endpoint: string, data: any): Promise<T> =>
 
     if (!response.ok) {
         const error: ErrorResponse = await response.json();
-        throw new Error(error.message || 'Erro na requisição');
+        throw new Error(error.error || error.message || 'Erro na requisição');
     }
 
     return response.json();

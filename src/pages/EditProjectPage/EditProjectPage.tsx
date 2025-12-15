@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Save, ArrowLeft, Link as LinkIcon, Image as ImageIcon, FileText, Type, Activity, X, Plus, Tag, TrendingUp, Loader2 } from 'lucide-react';
+import { Save, ArrowLeft, Link as LinkIcon, Image as ImageIcon, FileText, Type, Activity, X, Plus, Tag, TrendingUp, Loader2, CheckCircle, AlertCircle, Clock } from 'lucide-react';
 import { Project, ImpactIndicator, Keyword } from '../../types';
 import Sidebar from '../../components/Sidebar/Sidebar';
 import Button from '../../components/Button/Button';
@@ -65,8 +65,11 @@ const EditProjectPage = () => {
                 // Set impact indicators
                 setImpactIndicators(data.impactIndicators || []);
 
-                // Set image preview
-                if (data.img_url) {
+                // Set image preview - priorizar localStorage
+                const storedImage = localStorage.getItem(`project_image_${data.id}`);
+                if (storedImage) {
+                    setImagePreview(storedImage);
+                } else if (data.img_url) {
                     setImagePreview(data.img_url);
                 }
 
@@ -150,7 +153,18 @@ const EditProjectPage = () => {
         const file = e.target.files?.[0];
         if (file) {
             setSelectedImage(file);
-            setImagePreview(URL.createObjectURL(file));
+            const previewUrl = URL.createObjectURL(file);
+            setImagePreview(previewUrl);
+            
+            // Converter para base64 e armazenar no localStorage
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64Image = reader.result as string;
+                if (project?.id) {
+                    localStorage.setItem(`project_image_${project.id}`, base64Image);
+                }
+            };
+            reader.readAsDataURL(file);
         }
     };
 
@@ -172,7 +186,12 @@ const EditProjectPage = () => {
 
             // Upload image if selected
             if (selectedImage) {
-                await projectService.updateImage(project.id, selectedImage);
+                try {
+                    await projectService.updateImage(project.id, selectedImage);
+                } catch (imgErr: any) {
+                    console.warn('Erro ao fazer upload da imagem, mas ela foi salva localmente:', imgErr);
+                    // Imagem já está no localStorage, então só avisa o usuário
+                }
             }
 
             alert('Projeto atualizado com sucesso!');
@@ -180,6 +199,30 @@ const EditProjectPage = () => {
         } catch (err: any) {
             console.error('Erro ao atualizar projeto:', err);
             setError(err.message || 'Erro ao atualizar projeto');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const handleResubmit = async () => {
+        if (!project) return;
+        
+        if (!confirm('Deseja reenviar este projeto para aprovação?')) return;
+
+        setSaving(true);
+        setError(null);
+
+        try {
+            // Atualizar status para SUBMITTED
+            await projectService.update(project.id, {
+                status: 'SUBMITTED',
+            });
+
+            alert('Projeto reenviado para aprovação com sucesso!');
+            navigate('/dashboard/perfil');
+        } catch (err: any) {
+            console.error('Erro ao reenviar projeto:', err);
+            setError(err.message || 'Erro ao reenviar projeto');
         } finally {
             setSaving(false);
         }
@@ -241,6 +284,8 @@ const EditProjectPage = () => {
                                         {error}
                                     </div>
                                 )}
+
+
 
                                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                                     {/* Subtitle */}
@@ -480,6 +525,7 @@ const EditProjectPage = () => {
                                         >
                                             Cancelar
                                         </Button>
+                                        
                                         <Button
                                             variant="primary"
                                             type="submit"

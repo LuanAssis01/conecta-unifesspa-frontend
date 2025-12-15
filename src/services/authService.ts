@@ -102,7 +102,7 @@ export const authService = {
 
             if (!response.ok) {
                 const errorData: ErrorResponse = await response.json();
-                throw new Error(errorData.message || 'Erro ao registrar usuário');
+                throw new Error(errorData.error || errorData.message || 'Erro ao registrar usuário');
             }
 
             const data: AuthResponse = await response.json();

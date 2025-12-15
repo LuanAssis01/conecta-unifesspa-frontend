@@ -22,6 +22,7 @@ interface SubmitProjectForm {
     numberVacancies: number;
     audience: 'INTERNAL' | 'EXTERNAL';
     proposal_file: FileList;
+    image_file: FileList;
 }
 
 const SubmitProjectPage = () => {
@@ -68,12 +69,43 @@ const SubmitProjectPage = () => {
             const response = await projectService.create(projectData);
             const createdProject = response.project;
 
-            // Se houver arquivo de proposta, fazer upload
-            if (data.proposal_file && data.proposal_file.length > 0) {
-                await projectService.updateProposal(createdProject.id, data.proposal_file[0]);
+            let hasUploadError = false;
+
+            // Se houver imagem, fazer upload e armazenar localmente
+            if (data.image_file && data.image_file.length > 0) {
+                try {
+                    // Armazenar localmente como backup
+                    const imageFile = data.image_file[0];
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        const base64Image = reader.result as string;
+                        localStorage.setItem(`project_image_${createdProject.id}`, base64Image);
+                    };
+                    reader.readAsDataURL(imageFile);
+
+                    // Tentar fazer upload para o backend
+                    await projectService.updateImage(createdProject.id, imageFile);
+                } catch (fileErr: any) {
+                    console.warn('Erro ao fazer upload da imagem:', fileErr);
+                    hasUploadError = true;
+                }
             }
 
-            alert('Projeto submetido com sucesso! Aguarde a aprovação.');
+            // Se houver arquivo de proposta, fazer upload
+            if (data.proposal_file && data.proposal_file.length > 0) {
+                try {
+                    await projectService.updateProposal(createdProject.id, data.proposal_file[0]);
+                } catch (fileErr: any) {
+                    console.warn('Erro ao fazer upload do arquivo:', fileErr);
+                    hasUploadError = true;
+                }
+            }
+
+            if (hasUploadError) {
+                alert('Projeto criado com sucesso, mas houve um erro ao anexar alguns arquivos. Você pode anexá-los depois na página de edição.');
+            } else {
+                alert('Projeto submetido com sucesso! Aguarde a aprovação.');
+            }
             navigate('/dashboard/perfil');
         } catch (error: any) {
             console.error('Erro ao submeter projeto:', error);
@@ -292,25 +324,53 @@ const SubmitProjectPage = () => {
                                 <div className="space-y-6">
                                     <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2 pb-2 border-b border-gray-100">
                                         <Upload className="text-primary-500" size={24} />
-                                        Documentação
+                                        Documentação e Imagem
                                     </h2>
 
-                                    <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-primary-500 hover:bg-primary-50 transition cursor-pointer group">
-                                        <input
-                                            type="file"
-                                            id="file-upload"
-                                            accept=".pdf,.doc,.docx"
-                                            {...register('proposal_file')}
-                                            className="hidden"
-                                        />
-                                        <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center">
-                                            <div className="w-16 h-16 bg-blue-50 text-primary-500 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition">
-                                                <Upload size={32} />
-                                            </div>
-                                            <span className="text-lg font-semibold text-gray-700 mb-1">Clique para fazer upload</span>
-                                            <span className="text-sm text-gray-500">ou arraste e solte o arquivo aqui</span>
-                                            <span className="text-xs text-gray-400 mt-2">PDF, DOC ou DOCX (Máx. 10MB) - Opcional</span>
+                                    {/* Imagem de Capa */}
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                            Imagem de Capa do Projeto
                                         </label>
+                                        <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary-500 hover:bg-primary-50 transition cursor-pointer group">
+                                            <input
+                                                type="file"
+                                                id="image-upload"
+                                                accept="image/jpeg,image/jpg,image/png,image/gif"
+                                                {...register('image_file')}
+                                                className="hidden"
+                                            />
+                                            <label htmlFor="image-upload" className="cursor-pointer flex flex-col items-center">
+                                                <div className="w-14 h-14 bg-green-50 text-green-600 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition">
+                                                    <Upload size={28} />
+                                                </div>
+                                                <span className="text-base font-semibold text-gray-700 mb-1">Clique para fazer upload da imagem</span>
+                                                <span className="text-xs text-gray-400 mt-1">JPG, JPEG, PNG ou GIF (Máx. 5MB) - Opcional</span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    {/* Documento da Proposta */}
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                            Documento da Proposta
+                                        </label>
+                                        <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-primary-500 hover:bg-primary-50 transition cursor-pointer group">
+                                            <input
+                                                type="file"
+                                                id="file-upload"
+                                                accept=".pdf,.doc,.docx"
+                                                {...register('proposal_file')}
+                                                className="hidden"
+                                            />
+                                            <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center">
+                                                <div className="w-14 h-14 bg-blue-50 text-primary-500 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition">
+                                                    <Upload size={28} />
+                                                </div>
+                                                <span className="text-base font-semibold text-gray-700 mb-1">Clique para fazer upload do documento</span>
+                                                <span className="text-xs text-gray-400 mt-1">PDF, DOC ou DOCX (Máx. 10MB) - Opcional</span>
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
 

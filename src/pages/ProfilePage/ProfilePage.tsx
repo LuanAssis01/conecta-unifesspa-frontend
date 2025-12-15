@@ -144,8 +144,8 @@ const ProfilePage = () => {
                             : undefined
                         }
                       />
-                      {/* Edit Button - Always Visible for Active/Approved */}
-                      {(project.status === 'ACTIVE' || project.status === 'APPROVED') && (
+                      {/* Edit Button - Visible apenas para APPROVED e ACTIVE */}
+                      {(project.status === 'APPROVED' || project.status === 'ACTIVE') && (
                         <div className="absolute top-4 right-4 z-20">
                           <button
                             onClick={(e) => {

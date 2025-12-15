@@ -8,6 +8,37 @@ import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import Button from '../../components/Button/Button';
 
+// Componente para renderizar a imagem do projeto com suporte a localStorage
+const ProjectImage = ({ projectId, imgUrl, projectName }: { projectId: string; imgUrl?: string; projectName: string }) => {
+    const [imageSrc, setImageSrc] = useState<string | null>(null);
+
+    useEffect(() => {
+        // Verificar localStorage primeiro
+        const storedImage = localStorage.getItem(`project_image_${projectId}`);
+        if (storedImage) {
+            setImageSrc(storedImage);
+        } else if (imgUrl) {
+            setImageSrc(imgUrl);
+        }
+    }, [projectId, imgUrl]);
+
+    if (imageSrc) {
+        return (
+            <img
+                src={imageSrc}
+                alt={projectName}
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+            />
+        );
+    }
+
+    return (
+        <div className="w-full h-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
+            <span className="text-primary-600 font-bold text-4xl">{projectName.charAt(0)}</span>
+        </div>
+    );
+};
+
 const PublicProjectsPage = () => {
     const navigate = useNavigate();
     const [projects, setProjects] = useState<Project[]>([]);
@@ -199,17 +230,11 @@ const PublicProjectsPage = () => {
                                         onClick={() => navigate(`/projetos/${project.id}`)}
                                     >
                                         <div className="absolute inset-0 bg-secondary-900/10 group-hover:bg-transparent transition-colors z-10"></div>
-                                        {project.img_url ? (
-                                            <img
-                                                src={project.img_url}
-                                                alt={project.name}
-                                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
-                                                <span className="text-primary-600 font-bold text-4xl">{project.name.charAt(0)}</span>
-                                            </div>
-                                        )}
+                                        <ProjectImage 
+                                            projectId={project.id} 
+                                            imgUrl={project.img_url} 
+                                            projectName={project.name} 
+                                        />
                                         <div className="absolute top-3 right-3 z-20">
                                             <span className={`px-3 py-1 rounded-full text-xs font-bold border ${statusColors[project.status]} shadow-sm`}>
                                                 {statusLabels[project.status]}

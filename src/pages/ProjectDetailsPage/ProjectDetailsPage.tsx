@@ -13,6 +13,7 @@ const ProjectDetailsPage = () => {
     const [project, setProject] = useState<Project | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [localImage, setLocalImage] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchProject = async () => {
@@ -22,6 +23,12 @@ const ProjectDetailsPage = () => {
                 setError(null);
                 const data = await projectService.getById(id);
                 setProject(data);
+
+                // Verificar se há imagem armazenada localmente
+                const storedImage = localStorage.getItem(`project_image_${id}`);
+                if (storedImage) {
+                    setLocalImage(storedImage);
+                }
             } catch (err) {
                 console.error('Erro ao carregar projeto:', err);
                 setError(err instanceof Error ? err.message : 'Erro ao carregar projeto');
@@ -137,9 +144,9 @@ const ProjectDetailsPage = () => {
                         {/* Left Column - Image */}
                         <div>
                             <div className="sticky top-8">
-                                {project.img_url ? (
+                                {(localImage || project.img_url) ? (
                                     <img
-                                        src={project.img_url}
+                                        src={localImage || project.img_url}
                                         alt={project.name}
                                         className="w-full rounded-xl shadow-lg"
                                     />
@@ -294,7 +301,7 @@ const ProjectDetailsPage = () => {
                             )}
 
                             {/* CTA Button */}
-                            {project.is_public && project.registration_form_url && project.status === 'ACTIVE' && (
+                            {project.registration_form_url && project.status === 'ACTIVE' && (
                                 <div className="pt-6">
                                     <Button
                                         variant="primary"
