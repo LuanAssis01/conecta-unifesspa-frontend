@@ -68,22 +68,28 @@ const ProjectCard = ({
       transition-all duration-300 h-full flex flex-col cursor-pointer
       hover:-translate-y-1 hover:shadow-xl group
     ">
-      {showImage && project.image && (
+      {showImage && (
         <div className="relative w-full h-[220px] overflow-hidden">
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 z-10" />
-          <img
-            src={project.image}
-            alt={project.title}
-            className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
-          />
+          {project.img_url ? (
+            <img
+              src={project.img_url}
+              alt={project.name}
+              className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500"
+            />
+          ) : (
+            <div className="w-full h-full bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
+              <span className="text-primary-600 font-bold text-4xl">{project.name.charAt(0)}</span>
+            </div>
+          )}
 
-          {showCourse && (
+          {showCourse && project.course && (
             <div className="absolute top-4 left-4 z-20">
               <span className={`
                 flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold uppercase tracking-wide
                 bg-white/90 backdrop-blur-sm shadow-sm border border-gray-100 text-[var(--color-text-secondary)]
               `}>
-                {project.course || project.category}
+                {project.course.name}
               </span>
             </div>
           )}
@@ -102,7 +108,7 @@ const ProjectCard = ({
         </div>
 
         <h3 className="text-xl font-bold text-[var(--color-text)] leading-tight mb-3 group-hover:text-[var(--color-primary)] transition-colors">
-          {project.title}
+          {project.name}
         </h3>
 
         <p className="text-[var(--color-text-secondary)] text-sm leading-relaxed mb-6 flex-1 line-clamp-3">
@@ -110,10 +116,10 @@ const ProjectCard = ({
         </p>
 
         <div className="flex items-center gap-4 pt-4 border-t border-[var(--color-border)] mt-auto">
-          {project.coordinator && (
+          {project.creator && (
             <div className="flex items-center gap-2 text-xs text-[var(--color-text-secondary)] font-medium">
               <User size={14} className="text-[var(--color-primary)]" />
-              <span>{project.coordinator}</span>
+              <span>{project.creator.name}</span>
             </div>
           )}
         </div>

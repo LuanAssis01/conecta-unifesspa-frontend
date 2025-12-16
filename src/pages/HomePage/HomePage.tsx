@@ -1,6 +1,8 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowRight, Sparkles, Users, Target } from 'lucide-react';
-import { mockProjects } from '../../services/mockData';
+import { ArrowRight, Sparkles, Users, Target, Loader2 } from 'lucide-react';
+import { projectService } from '../../services/projectService';
+import { Project } from '../../types';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import ProjectCard from '../../components/ProjectCard/ProjectCard';
@@ -9,7 +11,24 @@ import FotoUnifesspa from '../../assets/images/foto_unifesspa.png';
 
 const HomePage = () => {
     const navigate = useNavigate();
-    const featuredProjects = mockProjects.slice(0, 3);
+    const [featuredProjects, setFeaturedProjects] = useState<Project[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchFeaturedProjects = async () => {
+            try {
+                setLoading(true);
+                const projects = await projectService.getAllFiltered({ status: 'ACTIVE' });
+                setFeaturedProjects(projects.slice(0, 3));
+            } catch (error) {
+                console.error('Erro ao carregar projetos em destaque:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchFeaturedProjects();
+    }, []);
 
     return (
         <div className="min-h-screen flex flex-col bg-secondary-50">
@@ -126,15 +145,29 @@ const HomePage = () => {
                 </div>
 
                 {/* Projects Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-                    {featuredProjects.map((project) => (
-                        <ProjectCard
-                            key={project.id}
-                            project={project}
-                            onView={(p) => navigate(`/projetos/${p.id}`)}
-                        />
-                    ))}
-                </div>
+                {loading ? (
+                    <div className="flex items-center justify-center py-24">
+                        <Loader2 className="w-10 h-10 animate-spin text-primary-600" />
+                        <span className="ml-3 text-secondary-600 text-lg">Carregando projetos...</span>
+                    </div>
+                ) : featuredProjects.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+                        {featuredProjects.map((project) => (
+                            <ProjectCard
+                                key={project.id}
+                                project={project}
+                                onView={(p) => navigate(`/projetos/${p.id}`)}
+                            />
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-24 bg-white rounded-2xl border border-secondary-100">
+                        <p className="text-secondary-600 text-lg mb-4">Nenhum projeto ativo encontrado</p>
+                        <Button variant="primary" onClick={() => navigate('/projetos')}>
+                            Ver Todos os Projetos
+                        </Button>
+                    </div>
+                )}
 
                 <div className="flex justify-center">
                     <Button
